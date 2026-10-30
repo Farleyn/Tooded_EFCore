@@ -10,11 +10,11 @@ public partial class Form2 : Form
 
     private readonly DataGridView dataGridViewTooted = new();
     private readonly GroupBox gbAndmed = new(), gbPilt = new();
-    private readonly TextBox txtNimetus = new(), txtKogus = new(), txtHind = new(), txtOtsing = new();
+    private readonly TextBox txtNimetus = new(), txtKogus = new(), txtHind = new(), txtOtsing = new(), txtTriipkood = new();
     private readonly ComboBox comboKategooria = new();
     private readonly PictureBox picturePilt = new();
     private readonly Button btnValiPilt = new(), btnLisa = new(), btnUuenda = new(),
-                            btnKustuta = new(), btnTyhjenda = new();
+                            btnKustuta = new(), btnTyhjenda = new(), btnGenKood = new(), btnNaitaKood = new();
 
     public Form2()
     {
@@ -49,7 +49,7 @@ public partial class Form2 : Form
         dataGridViewTooted.CellClick += dataGridViewTooted_CellClick;
 
         gbAndmed.Text = "Toote andmed";
-        gbAndmed.SetBounds(624, 12, 324, 165);
+        gbAndmed.SetBounds(624, 12, 324, 199);
         gbAndmed.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
         txtNimetus.SetBounds(92, 26, 220, 23);
@@ -57,33 +57,37 @@ public partial class Form2 : Form
         txtHind.SetBounds(92, 94, 220, 23);
         comboKategooria.SetBounds(92, 128, 220, 23);
         comboKategooria.DropDownStyle = ComboBoxStyle.DropDownList;
+        txtTriipkood.SetBounds(92, 162, 130, 23);
+        SeaNupp(btnGenKood, "Genereeri", 228, 160, 84, 27, btnGenKood_Click);
 
         gbAndmed.Controls.AddRange(new Control[] {
             LooSilt("Nimetus:", 12, 30), LooSilt("Kogus:", 12, 64),
             LooSilt("Hind (€):", 12, 98), LooSilt("Kategooria:", 12, 132),
-            txtNimetus, txtKogus, txtHind, comboKategooria });
+            LooSilt("Triipkood:", 12, 166),
+            txtNimetus, txtKogus, txtHind, comboKategooria, txtTriipkood, btnGenKood });
 
         gbPilt.Text = "Pilt";
-        gbPilt.SetBounds(624, 187, 324, 222);
+        gbPilt.SetBounds(624, 221, 324, 190);
         gbPilt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        picturePilt.SetBounds(12, 22, 300, 150);
+        picturePilt.SetBounds(12, 22, 300, 120);
         picturePilt.SizeMode = PictureBoxSizeMode.Zoom;
         picturePilt.BorderStyle = BorderStyle.FixedSingle;
 
-        SeaNupp(btnValiPilt, "Vali pilt...", 12, 184, 120, 28, btnValiPilt_Click);
+        SeaNupp(btnValiPilt, "Vali pilt...", 12, 152, 120, 28, btnValiPilt_Click);
         gbPilt.Controls.AddRange(new Control[] { picturePilt, btnValiPilt });
 
         SeaNupp(btnLisa, "Lisa", 624, 419, 100, 30, btnLisa_Click);
         SeaNupp(btnUuenda, "Uuenda", 736, 419, 100, 30, btnUuenda_Click);
         SeaNupp(btnKustuta, "Kustuta", 848, 419, 100, 30, btnKustuta_Click);
-        SeaNupp(btnTyhjenda, "Tühjenda väljad", 624, 459, 324, 30, (s, e) => TyhjendaVorm());
+        SeaNupp(btnTyhjenda, "Tühjenda väljad", 624, 459, 156, 30, (s, e) => TyhjendaVorm());
+        SeaNupp(btnNaitaKood, "Näita triipkoodi", 792, 459, 156, 30, btnNaitaKood_Click);
 
-        foreach (var nupp in new[] { btnLisa, btnUuenda, btnKustuta, btnTyhjenda })
+        foreach (var nupp in new[] { btnLisa, btnUuenda, btnKustuta, btnTyhjenda, btnNaitaKood })
             nupp.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
         Controls.AddRange(new Control[] { LooSilt("Otsing:", 12, 17), txtOtsing, dataGridViewTooted, gbAndmed, gbPilt,
-            btnLisa, btnUuenda, btnKustuta, btnTyhjenda });
+            btnLisa, btnUuenda, btnKustuta, btnTyhjenda, btnNaitaKood });
     }
 
     private Label LooSilt(string tekst, int x, int y)
@@ -119,15 +123,53 @@ public partial class Form2 : Form
                 t.Hind,
                 t.KategooriaId,
                 Kategooria = t.Kategooria.Kategooria_nimetus,
-                t.Pilt
+                t.Pilt,
+                t.Triipkood
             })
             .ToList();
 
         dataGridViewTooted.Columns["Id"]!.Visible = false;
         dataGridViewTooted.Columns["KategooriaId"]!.Visible = false;
         dataGridViewTooted.Columns["Pilt"]!.Visible = false;
+        dataGridViewTooted.Columns["Triipkood"]!.HeaderText = "Triipkood";
         dataGridViewTooted.Columns["Toodenimetus"]!.HeaderText = "Toode";
         dataGridViewTooted.Columns["Hind"]!.HeaderText = "Hind (€)";
+    }
+
+    private void btnGenKood_Click(object? sender, EventArgs e)
+    {
+        var juhus = new Random();
+        string kood;
+        do
+        {
+            string alus = "200" + juhus.Next(0, 1_000_000_000).ToString("D9");
+            int summa = 0;
+            for (int i = 0; i < alus.Length; i++)
+                summa += (alus[i] - '0') * (i % 2 == 0 ? 1 : 3);
+            kood = alus + ((10 - summa % 10) % 10);
+        }
+        while (_db.Toodetabel.Any(t => t.Triipkood == kood));
+
+        txtTriipkood.Text = kood;
+    }
+
+    private void btnNaitaKood_Click(object? sender, EventArgs e)
+    {
+        string kood = txtTriipkood.Text.Trim();
+        if (kood.Length == 0)
+        {
+            MessageBox.Show("Sisesta või genereeri triipkood.");
+            return;
+        }
+
+        if (!TriipkoodiJoonistaja.SobibJoonistamiseks(kood))
+        {
+            MessageBox.Show("Seda koodi ei saa joonistada (lubatud on ASCII märgid).");
+            return;
+        }
+
+        using var vorm = new TriipkoodForm(txtNimetus.Text.Trim(), kood);
+        vorm.ShowDialog();
     }
 
     private void btnValiPilt_Click(object? sender, EventArgs e)
@@ -156,7 +198,15 @@ public partial class Form2 : Form
         if (comboKategooria.SelectedValue is not int kategooriaId)
         { MessageBox.Show("Vali kategooria."); return false; }
 
+        string kood = txtTriipkood.Text.Trim();
+        if (kood.Length > 32)
+        { MessageBox.Show("Triipkood on liiga pikk (kuni 32 märki)."); return false; }
+
+        if (kood.Length > 0 && _db.Toodetabel.Any(t => t.Triipkood == kood && t.Id != toode.Id))
+        { MessageBox.Show("See triipkood on juba kasutusel."); return false; }
+
         toode.Toodenimetus = txtNimetus.Text.Trim();
+        toode.Triipkood = kood.Length == 0 ? null : kood;
         toode.Kogus = kogus;
         toode.Hind = hind;
         toode.KategooriaId = kategooriaId;
@@ -186,6 +236,7 @@ public partial class Form2 : Form
         txtNimetus.Clear();
         txtKogus.Clear();
         txtHind.Clear();
+        txtTriipkood.Clear();
         valitudPilt = null;
         picturePilt.Image = null;
     }
@@ -209,6 +260,7 @@ public partial class Form2 : Form
         txtNimetus.Text = rida.Cells["Toodenimetus"].Value?.ToString();
         txtKogus.Text = rida.Cells["Kogus"].Value?.ToString();
         txtHind.Text = rida.Cells["Hind"].Value?.ToString();
+        txtTriipkood.Text = rida.Cells["Triipkood"].Value?.ToString();
         comboKategooria.SelectedValue = rida.Cells["KategooriaId"].Value;
 
         valitudPilt = null;

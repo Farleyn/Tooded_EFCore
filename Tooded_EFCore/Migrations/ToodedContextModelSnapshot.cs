@@ -115,9 +115,17 @@ namespace Tooded_EFCore.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Triipkood")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("KategooriaId");
+
+                    b.HasIndex("Triipkood")
+                        .IsUnique()
+                        .HasFilter("[Triipkood] IS NOT NULL");
 
                     b.ToTable("Toodetabel", (string)null);
                 });

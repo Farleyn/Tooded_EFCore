@@ -7,7 +7,8 @@ public partial class Form3 : Form
     private readonly ToodedContext _db = new();
     private readonly TabControl tabPood = new();
     private readonly Panel paneelAlla = new(), paneelUlal = new();
-    private readonly TextBox txtOtsing = new();
+    private readonly TextBox txtOtsing = new(), txtSkann = new();
+    private readonly Label lblSkann = new();
     private readonly Label lblKorv = new();
     private readonly Button btnKorv = new();
 
@@ -31,6 +32,14 @@ public partial class Form3 : Form
         txtOtsing.TextChanged += (s, e) => LaePood();
         paneelUlal.Controls.Add(new Label { Text = "Otsing:", Location = new Point(12, 12), AutoSize = true });
         paneelUlal.Controls.Add(txtOtsing);
+
+        txtSkann.SetBounds(410, 8, 160, 23);
+        txtSkann.Enabled = AktiivneKasutaja.VoibMuua;
+        txtSkann.KeyDown += txtSkann_KeyDown;
+        lblSkann.SetBounds(580, 12, 360, 20);
+        paneelUlal.Controls.Add(new Label { Text = "Triipkood:", Location = new Point(340, 12), AutoSize = true });
+        paneelUlal.Controls.Add(txtSkann);
+        paneelUlal.Controls.Add(lblSkann);
 
         lblKorv.Dock = DockStyle.Fill;
         lblKorv.TextAlign = ContentAlignment.MiddleLeft;
@@ -154,6 +163,35 @@ public partial class Form3 : Form
 
         kaart.Controls.AddRange(new Control[] { pilt, nimi, hind, laos, kogus, nupp });
         return kaart;
+    }
+
+    private void txtSkann_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.KeyCode != Keys.Enter) return;
+        e.SuppressKeyPress = true;
+
+        string kood = txtSkann.Text.Trim();
+        txtSkann.Clear();
+        if (kood.Length == 0) return;
+
+        using var db = new ToodedContext();
+        var toode = db.Toodetabel.AsNoTracking().FirstOrDefault(t => t.Triipkood == kood);
+        if (toode == null)
+        {
+            lblSkann.Text = $"Triipkoodi ei leitud: {kood}";
+            return;
+        }
+
+        int korvis = Ostukorv.Ridad.FirstOrDefault(r => r.Toode.Id == toode.Id)?.Kogus ?? 0;
+        if (korvis + 1 > toode.Kogus)
+        {
+            lblSkann.Text = $"{toode.Toodenimetus}: laos on ainult {toode.Kogus} tk";
+            return;
+        }
+
+        Ostukorv.Lisa(toode, 1);
+        lblSkann.Text = $"Lisatud: {toode.Toodenimetus}";
+        UuendaKorvi();
     }
 
     private void UuendaKorvi()

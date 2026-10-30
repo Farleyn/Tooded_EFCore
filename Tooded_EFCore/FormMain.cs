@@ -2,7 +2,7 @@ namespace Tooded_EFCore;
 
 public partial class FormMain : Form
 {
-    private readonly Button btnTooted = new(), btnPood = new(), btnArve = new(), btnAdmin = new(), btnValju = new();
+    private readonly Button btnTooted = new(), btnPood = new(), btnArve = new(), btnKiosk = new(), btnAdmin = new(), btnValju = new();
     private readonly StatusStrip olek = new();
     private readonly ToolStripStatusLabel lblKasutaja = new();
 
@@ -10,7 +10,7 @@ public partial class FormMain : Form
     {
         InitializeComponent();
         Text = "Peamenüü";
-        ClientSize = new Size(260, 276);
+        ClientSize = new Size(260, 322);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedSingle;
         MaximizeBox = false;
@@ -18,16 +18,18 @@ public partial class FormMain : Form
         SeaNupp(btnTooted, "Tootehaldus", 20, (s, e) => Ava(new Form2()));
         SeaNupp(btnPood, "Pood", 66, (s, e) => Ava(new Form3()));
         SeaNupp(btnArve, "Ostukorv ja arve", 112, (s, e) => Ava(new ArveForm()));
-        SeaNupp(btnAdmin, "Admin paneel", 158, (s, e) => Ava(new AdminForm()));
-        SeaNupp(btnValju, "Välju", 204, (s, e) => Close());
+        SeaNupp(btnKiosk, "Kioskirežiim", 158, (s, e) => Ava(new KioskForm()));
+        SeaNupp(btnAdmin, "Admin paneel", 204, (s, e) => Ava(new AdminForm()));
+        SeaNupp(btnValju, "Välju", 250, (s, e) => Close());
 
         lblKasutaja.Text = $"Kasutaja: {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
         olek.Items.Add(lblKasutaja);
 
-        Controls.AddRange(new Control[] { btnTooted, btnPood, btnArve, btnAdmin, btnValju, olek });
+        Controls.AddRange(new Control[] { btnTooted, btnPood, btnArve, btnKiosk, btnAdmin, btnValju, olek });
 
         btnTooted.Enabled = AktiivneKasutaja.OnAdmin;
         btnArve.Enabled = AktiivneKasutaja.VoibMuua;
+        btnKiosk.Enabled = AktiivneKasutaja.VoibMuua;
         btnAdmin.Enabled = AktiivneKasutaja.OnAdmin;
         Text = $"Peamenüü – {AktiivneKasutaja.Nimi}";
     }

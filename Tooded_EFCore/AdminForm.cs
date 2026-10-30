@@ -434,7 +434,8 @@ public partial class AdminForm : Form
                 Toode = t.Toodenimetus,
                 Kategooria = t.Kategooria.Kategooria_nimetus,
                 t.Kogus,
-                t.Hind
+                t.Hind,
+                t.Triipkood
             })
             .ToList();
 

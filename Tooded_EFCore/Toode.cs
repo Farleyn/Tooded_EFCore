@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Tooded_EFCore;
 
+[Index(nameof(Triipkood), IsUnique = true)]
 public class Toode
 {
     public int Id { get; set; }
@@ -12,6 +14,9 @@ public class Toode
     public decimal Hind { get; set; }
 
     public string? Pilt { get; set; }
+
+    [MaxLength(32)]
+    public string? Triipkood { get; set; }
 
     public int KategooriaId { get; set; }
     public Kategooria Kategooria { get; set; } = null!;
