@@ -230,6 +230,18 @@ public partial class ArveForm : Form
         MessageBox.Show($"PDF on loodud:\n{viimanePdf}");
     }
 
+    private static void SoidaLaost()
+    {
+        using var db = new ToodedContext();
+        foreach (var rida in Ostukorv.Ridad)
+        {
+            var toode = db.Toodetabel.Find(rida.Toode.Id);
+            if (toode != null)
+                toode.Kogus = Math.Max(0, toode.Kogus - rida.Kogus);
+        }
+        db.SaveChanges();
+    }
+
     private void btnAvaPDF_Click(object? sender, EventArgs e)
     {
         if (viimanePdf == null || !File.Exists(viimanePdf))
@@ -271,7 +283,8 @@ public partial class ArveForm : Form
             };
             smtp.Send(kiri);
 
-            MessageBox.Show("Arve saadetud!");
+            SoidaLaost();
+            MessageBox.Show("Arve saadetud ja laoseis uuendatud!");
             Ostukorv.Tyhjenda();
             NaitaKorvi();
         }

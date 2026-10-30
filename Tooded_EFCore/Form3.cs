@@ -6,7 +6,8 @@ public partial class Form3 : Form
 {
     private readonly ToodedContext _db = new();
     private readonly TabControl tabPood = new();
-    private readonly Panel paneelAlla = new();
+    private readonly Panel paneelAlla = new(), paneelUlal = new();
+    private readonly TextBox txtOtsing = new();
     private readonly Label lblKorv = new();
     private readonly Button btnKorv = new();
 
@@ -24,6 +25,13 @@ public partial class Form3 : Form
         paneelAlla.Height = 44;
         paneelAlla.Padding = new Padding(8);
 
+        paneelUlal.Dock = DockStyle.Top;
+        paneelUlal.Height = 40;
+        txtOtsing.SetBounds(70, 8, 250, 23);
+        txtOtsing.TextChanged += (s, e) => LaePood();
+        paneelUlal.Controls.Add(new Label { Text = "Otsing:", Location = new Point(12, 12), AutoSize = true });
+        paneelUlal.Controls.Add(txtOtsing);
+
         lblKorv.Dock = DockStyle.Fill;
         lblKorv.TextAlign = ContentAlignment.MiddleLeft;
 
@@ -31,6 +39,7 @@ public partial class Form3 : Form
         btnKorv.Dock = DockStyle.Right;
         btnKorv.Width = 150;
         btnKorv.Click += btnKorv_Click;
+        btnKorv.Enabled = AktiivneKasutaja.VoibMuua;
 
         paneelAlla.Controls.Add(lblKorv);
         paneelAlla.Controls.Add(btnKorv);
@@ -38,6 +47,7 @@ public partial class Form3 : Form
 
         Controls.Add(tabPood);
         Controls.Add(paneelAlla);
+        Controls.Add(paneelUlal);
         tabPood.BringToFront();
 
         LaePood();
@@ -46,24 +56,38 @@ public partial class Form3 : Form
 
     private void LaePood()
     {
+        string otsing = txtOtsing.Text.Trim();
+        string? valitud = tabPood.SelectedTab?.Text;
+
         tabPood.TabPages.Clear();
 
         var kategooriad = _db.Kategooriatabel
+            .AsNoTracking()
             .Include(k => k.Tooded)
             .OrderBy(k => k.Kategooria_nimetus)
             .ToList();
 
         foreach (var kat in kategooriad)
         {
+            var tooted = kat.Tooded
+                .Where(t => t.Toodenimetus.Contains(otsing, StringComparison.CurrentCultureIgnoreCase))
+                .OrderBy(t => t.Toodenimetus)
+                .ToList();
+
+            if (otsing.Length > 0 && tooted.Count == 0) continue;
+
             var leht = new TabPage(kat.Kategooria_nimetus);
             var rida = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(6) };
 
-            foreach (var toode in kat.Tooded.OrderBy(t => t.Toodenimetus))
+            foreach (var toode in tooted)
                 rida.Controls.Add(LooTootekaart(toode));
 
             leht.Controls.Add(rida);
             tabPood.TabPages.Add(leht);
         }
+
+        var tagasi = tabPood.TabPages.Cast<TabPage>().FirstOrDefault(p => p.Text == valitud);
+        if (tagasi != null) tabPood.SelectedTab = tagasi;
     }
 
     private Panel LooTootekaart(Toode t)
@@ -102,14 +126,15 @@ public partial class Form3 : Form
             Bounds = new Rectangle(5, 214, 55, 23),
             Minimum = 1,
             Maximum = Math.Max(1, t.Kogus),
-            Value = 1
+            Value = 1,
+            Enabled = t.Kogus > 0 && AktiivneKasutaja.VoibMuua
         };
 
         var nupp = new Button
         {
             Bounds = new Rectangle(66, 212, 97, 27),
             Text = "Lisa korvi",
-            Enabled = t.Kogus > 0
+            Enabled = t.Kogus > 0 && AktiivneKasutaja.VoibMuua
         };
 
         nupp.Click += (s, e) =>
@@ -133,6 +158,12 @@ public partial class Form3 : Form
 
     private void UuendaKorvi()
     {
+        if (!AktiivneKasutaja.VoibMuua)
+        {
+            lblKorv.Text = "Vaatamisrežiim";
+            return;
+        }
+
         int tk = Ostukorv.Ridad.Sum(r => r.Kogus);
         lblKorv.Text = $"Ostukorvis: {tk} tk, kokku {Ostukorv.Kokku:F2} €";
     }
@@ -141,6 +172,7 @@ public partial class Form3 : Form
     {
         using var vorm = new ArveForm();
         vorm.ShowDialog();
+        LaePood();
         UuendaKorvi();
     }
 

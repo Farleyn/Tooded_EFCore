@@ -10,7 +10,7 @@ public partial class Form2 : Form
 
     private readonly DataGridView dataGridViewTooted = new();
     private readonly GroupBox gbAndmed = new(), gbPilt = new();
-    private readonly TextBox txtNimetus = new(), txtKogus = new(), txtHind = new();
+    private readonly TextBox txtNimetus = new(), txtKogus = new(), txtHind = new(), txtOtsing = new();
     private readonly ComboBox comboKategooria = new();
     private readonly PictureBox picturePilt = new();
     private readonly Button btnValiPilt = new(), btnLisa = new(), btnUuenda = new(),
@@ -34,7 +34,10 @@ public partial class Form2 : Form
         MinimumSize = new Size(900, 500);
         StartPosition = FormStartPosition.CenterScreen;
 
-        dataGridViewTooted.SetBounds(12, 12, 600, 476);
+        txtOtsing.SetBounds(70, 13, 250, 23);
+        txtOtsing.TextChanged += (s, e) => LaeTooted();
+
+        dataGridViewTooted.SetBounds(12, 48, 600, 440);
         dataGridViewTooted.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         dataGridViewTooted.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         dataGridViewTooted.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -79,7 +82,7 @@ public partial class Form2 : Form
         foreach (var nupp in new[] { btnLisa, btnUuenda, btnKustuta, btnTyhjenda })
             nupp.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
-        Controls.AddRange(new Control[] { dataGridViewTooted, gbAndmed, gbPilt,
+        Controls.AddRange(new Control[] { LooSilt("Otsing:", 12, 17), txtOtsing, dataGridViewTooted, gbAndmed, gbPilt,
             btnLisa, btnUuenda, btnKustuta, btnTyhjenda });
     }
 
@@ -104,7 +107,10 @@ public partial class Form2 : Form
 
     private void LaeTooted()
     {
+        string otsing = txtOtsing.Text.Trim();
+
         dataGridViewTooted.DataSource = _db.Toodetabel
+            .Where(t => t.Toodenimetus.Contains(otsing))
             .Select(t => new
             {
                 t.Id,

@@ -26,6 +26,7 @@ public partial class FormMain : Form
         Controls.AddRange(new Control[] { btnTooted, btnPood, btnArve, btnValju, olek });
 
         btnTooted.Enabled = AktiivneKasutaja.OnAdmin;
+        btnArve.Enabled = AktiivneKasutaja.VoibMuua;
         Text = $"Peamenüü – {AktiivneKasutaja.Nimi}";
     }
 
