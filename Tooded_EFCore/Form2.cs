@@ -30,11 +30,11 @@ public partial class Form2 : Form
     private void LooLiides()
     {
         Text = "Toodete haldus";
-        ClientSize = new Size(960, 560);
-        MinimumSize = new Size(900, 560);
+        ClientSize = new Size(960, 500);
+        MinimumSize = new Size(900, 500);
         StartPosition = FormStartPosition.CenterScreen;
 
-        dataGridViewTooted.SetBounds(12, 12, 600, 536);
+        dataGridViewTooted.SetBounds(12, 12, 600, 476);
         dataGridViewTooted.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         dataGridViewTooted.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         dataGridViewTooted.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -46,13 +46,13 @@ public partial class Form2 : Form
         dataGridViewTooted.CellClick += dataGridViewTooted_CellClick;
 
         gbAndmed.Text = "Toote andmed";
-        gbAndmed.SetBounds(624, 12, 324, 170);
+        gbAndmed.SetBounds(624, 12, 324, 165);
         gbAndmed.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        txtNimetus.SetBounds(92, 26, 210, 23);
-        txtKogus.SetBounds(92, 60, 210, 23);
-        txtHind.SetBounds(92, 94, 210, 23);
-        comboKategooria.SetBounds(92, 128, 210, 23);
+        txtNimetus.SetBounds(92, 26, 220, 23);
+        txtKogus.SetBounds(92, 60, 220, 23);
+        txtHind.SetBounds(92, 94, 220, 23);
+        comboKategooria.SetBounds(92, 128, 220, 23);
         comboKategooria.DropDownStyle = ComboBoxStyle.DropDownList;
 
         gbAndmed.Controls.AddRange(new Control[] {
@@ -61,23 +61,23 @@ public partial class Form2 : Form
             txtNimetus, txtKogus, txtHind, comboKategooria });
 
         gbPilt.Text = "Pilt";
-        gbPilt.SetBounds(624, 190, 324, 210);
+        gbPilt.SetBounds(624, 187, 324, 222);
         gbPilt.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        picturePilt.SetBounds(12, 22, 300, 140);
+        picturePilt.SetBounds(12, 22, 300, 150);
         picturePilt.SizeMode = PictureBoxSizeMode.Zoom;
         picturePilt.BorderStyle = BorderStyle.FixedSingle;
 
-        SeaNupp(btnValiPilt, "Vali pilt...", 12, 172, 120, 28, btnValiPilt_Click);
+        SeaNupp(btnValiPilt, "Vali pilt...", 12, 184, 120, 28, btnValiPilt_Click);
         gbPilt.Controls.AddRange(new Control[] { picturePilt, btnValiPilt });
 
-        SeaNupp(btnLisa, "Lisa", 624, 410, 100, 30, btnLisa_Click);
-        SeaNupp(btnUuenda, "Uuenda", 736, 410, 100, 30, btnUuenda_Click);
-        SeaNupp(btnKustuta, "Kustuta", 848, 410, 100, 30, btnKustuta_Click);
-        SeaNupp(btnTyhjenda, "Tühjenda väljad", 624, 450, 324, 30, (s, e) => TyhjendaVorm());
+        SeaNupp(btnLisa, "Lisa", 624, 419, 100, 30, btnLisa_Click);
+        SeaNupp(btnUuenda, "Uuenda", 736, 419, 100, 30, btnUuenda_Click);
+        SeaNupp(btnKustuta, "Kustuta", 848, 419, 100, 30, btnKustuta_Click);
+        SeaNupp(btnTyhjenda, "Tühjenda väljad", 624, 459, 324, 30, (s, e) => TyhjendaVorm());
 
         foreach (var nupp in new[] { btnLisa, btnUuenda, btnKustuta, btnTyhjenda })
-            nupp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            nupp.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
         Controls.AddRange(new Control[] { dataGridViewTooted, gbAndmed, gbPilt,
             btnLisa, btnUuenda, btnKustuta, btnTyhjenda });

@@ -10,28 +10,28 @@ public partial class LoginForm : Form
     {
         InitializeComponent();
         Text = "Sisselogimine";
-        ClientSize = new Size(320, 190);
+        ClientSize = new Size(320, 180);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
 
-        var lblEmail = new Label { Text = "E-post:", Location = new Point(20, 24), AutoSize = true };
-        var lblParool = new Label { Text = "Parool:", Location = new Point(20, 64), AutoSize = true };
+        var lblEmail = new Label { Text = "E-post:", Location = new Point(20, 25), AutoSize = true };
+        var lblParool = new Label { Text = "Parool:", Location = new Point(20, 65), AutoSize = true };
 
-        txtEmail.SetBounds(90, 20, 210, 23);
-        txtParool.SetBounds(90, 60, 210, 23);
+        txtEmail.SetBounds(90, 22, 210, 23);
+        txtParool.SetBounds(90, 62, 210, 23);
         txtParool.UseSystemPasswordChar = true;
 
         btnLogin.Text = "Logi sisse";
-        btnLogin.SetBounds(90, 100, 100, 30);
+        btnLogin.SetBounds(90, 102, 100, 30);
         btnLogin.Click += btnLogin_Click;
 
         btnSulge.Text = "Sulge";
-        btnSulge.SetBounds(200, 100, 100, 30);
+        btnSulge.SetBounds(200, 102, 100, 30);
         btnSulge.Click += (s, e) => Close();
 
-        lblVeateade.SetBounds(20, 145, 280, 30);
+        lblVeateade.SetBounds(20, 145, 280, 20);
         lblVeateade.ForeColor = Color.Red;
 
         AcceptButton = btnLogin;

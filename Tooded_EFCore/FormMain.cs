@@ -10,15 +10,15 @@ public partial class FormMain : Form
     {
         InitializeComponent();
         Text = "Peamenüü";
-        ClientSize = new Size(260, 250);
+        ClientSize = new Size(260, 230);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedSingle;
         MaximizeBox = false;
 
-        SeaNupp(btnTooted, "Tootehaldus", 30, (s, e) => Ava(new Form2()));
-        SeaNupp(btnPood, "Pood", 75, (s, e) => Ava(new Form3()));
-        SeaNupp(btnArve, "Ostukorv ja arve", 120, (s, e) => Ava(new ArveForm()));
-        SeaNupp(btnValju, "Välju", 175, (s, e) => Close());
+        SeaNupp(btnTooted, "Tootehaldus", 20, (s, e) => Ava(new Form2()));
+        SeaNupp(btnPood, "Pood", 66, (s, e) => Ava(new Form3()));
+        SeaNupp(btnArve, "Ostukorv ja arve", 112, (s, e) => Ava(new ArveForm()));
+        SeaNupp(btnValju, "Välju", 158, (s, e) => Close());
 
         lblKasutaja.Text = $"Kasutaja: {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
         olek.Items.Add(lblKasutaja);
@@ -33,6 +33,7 @@ public partial class FormMain : Form
     {
         nupp.Text = tekst;
         nupp.SetBounds(30, y, 200, 36);
+        nupp.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         nupp.Click += kasitleja;
     }
 

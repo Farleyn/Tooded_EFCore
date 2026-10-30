@@ -9,7 +9,7 @@ namespace Tooded_EFCore;
 public partial class ArveForm : Form
 {
     private readonly DataGridView tabelKorv = new();
-    private readonly Panel paneel = new();
+    private readonly GroupBox gbArve = new();
     private readonly Label lblKokku = new();
     private readonly TextBox txtEmail = new();
     private readonly Button btnMiinus = new(), btnPluss = new(), btnEemalda = new(),
@@ -20,52 +20,68 @@ public partial class ArveForm : Form
     public ArveForm()
     {
         InitializeComponent();
-        Stiil.Vorm(this);
-        Text = "Ostukorv ja arve";
-        ClientSize = new Size(780, 470);
-        MinimumSize = new Size(700, 460);
+        LooLiides();
+        NaitaKorvi();
+    }
 
-        Stiil.Tabel(tabelKorv);
-        tabelKorv.SetBounds(16, 16, 448, 340);
+    private void LooLiides()
+    {
+        Text = "Ostukorv ja arve";
+        ClientSize = new Size(800, 500);
+        MinimumSize = new Size(780, 480);
+        StartPosition = FormStartPosition.CenterScreen;
+
+        tabelKorv.SetBounds(12, 12, 460, 400);
         tabelKorv.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        tabelKorv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        tabelKorv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        tabelKorv.BackgroundColor = SystemColors.Window;
+        tabelKorv.RowHeadersVisible = false;
+        tabelKorv.MultiSelect = false;
+        tabelKorv.ReadOnly = true;
+        tabelKorv.AllowUserToAddRows = false;
         tabelKorv.Columns.Add("Toode", "Toode");
         tabelKorv.Columns.Add("Kogus", "Kogus");
-        tabelKorv.Columns.Add("Hind", "Hind, €");
-        tabelKorv.Columns.Add("Summa", "Summa, €");
-        tabelKorv.Columns["Toode"]!.FillWeight = 220;
+        tabelKorv.Columns.Add("Hind", "Hind (€)");
+        tabelKorv.Columns.Add("Summa", "Summa (€)");
+        tabelKorv.Columns["Toode"]!.FillWeight = 200;
         tabelKorv.Columns["Kogus"]!.FillWeight = 70;
         tabelKorv.Columns["Hind"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
         tabelKorv.Columns["Summa"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
-        Stiil.Nupp(btnMiinus, "-1", 16, 368, 56, 34, btnMiinus_Click);
-        Stiil.Nupp(btnPluss, "+1", 80, 368, 56, 34, btnPluss_Click);
-        Stiil.Nupp(btnEemalda, "Eemalda rida", 144, 368, 130, 34, btnEemalda_Click, "oht");
-        foreach (var nupp in new[] { btnMiinus, btnPluss, btnEemalda })
-            nupp.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        SeaNupp(btnMiinus, "-1", 12, 422, 60, 30, btnMiinus_Click);
+        SeaNupp(btnPluss, "+1", 84, 422, 60, 30, btnPluss_Click);
+        SeaNupp(btnEemalda, "Eemalda rida", 156, 422, 120, 30, btnEemalda_Click);
 
-        lblKokku.SetBounds(16, 416, 448, 36);
-        lblKokku.Font = Stiil.KokkuFont;
-        lblKokku.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        lblKokku.AutoSize = true;
+        lblKokku.Font = new Font(Font.FontFamily, 12f, FontStyle.Bold);
+        lblKokku.Location = new Point(12, 466);
 
-        Stiil.Raam(paneel);
-        paneel.SetBounds(480, 16, 284, 270);
-        paneel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        foreach (var c in new Control[] { btnMiinus, btnPluss, btnEemalda, lblKokku })
+            c.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 
-        Stiil.Sisend(txtEmail, 16, 38, 252);
+        gbArve.Text = "Arve";
+        gbArve.SetBounds(484, 12, 304, 206);
+        gbArve.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        Stiil.Nupp(btnGenPDF, "Genereeri PDF", 16, 86, 252, 38, btnGenPDF_Click);
-        Stiil.Nupp(btnAvaPDF, "Ava PDF", 16, 132, 252, 34, btnAvaPDF_Click);
-        Stiil.Nupp(btnSaadaEmail, "Saada e-postiga", 16, 184, 252, 40, btnSaadaEmail_Click, "esmane");
+        txtEmail.SetBounds(12, 50, 280, 23);
 
-        var vihje = Stiil.Silt("Enne saatmist genereeri PDF.", 16, 236, 252);
+        SeaNupp(btnGenPDF, "Genereeri PDF", 12, 88, 280, 30, btnGenPDF_Click);
+        SeaNupp(btnAvaPDF, "Ava PDF", 12, 126, 280, 30, btnAvaPDF_Click);
+        SeaNupp(btnSaadaEmail, "Saada e-postiga", 12, 164, 280, 30, btnSaadaEmail_Click);
 
-        paneel.Controls.AddRange(new Control[] {
-            Stiil.Silt("Saaja e-post", 16, 16, 252),
-            txtEmail, btnGenPDF, btnAvaPDF, btnSaadaEmail, vihje });
+        gbArve.Controls.AddRange(new Control[] {
+            new Label { Text = "Saaja e-post:", Location = new Point(12, 28), AutoSize = true },
+            txtEmail, btnGenPDF, btnAvaPDF, btnSaadaEmail });
 
-        Controls.AddRange(new Control[] { tabelKorv, btnMiinus, btnPluss, btnEemalda, lblKokku, paneel });
+        Controls.AddRange(new Control[] { tabelKorv, btnMiinus, btnPluss, btnEemalda, lblKokku, gbArve });
+    }
 
-        NaitaKorvi();
+    private static void SeaNupp(Button nupp, string tekst, int x, int y, int laius, int korgus, EventHandler kasitleja)
+    {
+        nupp.Text = tekst;
+        nupp.SetBounds(x, y, laius, korgus);
+        nupp.Click += kasitleja;
     }
 
     private void NaitaKorvi()
