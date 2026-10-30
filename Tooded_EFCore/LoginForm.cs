@@ -56,6 +56,7 @@ public partial class LoginForm : Form
         }
 
         AktiivneKasutaja.Nimi = kasutaja.Nimi;
+        AktiivneKasutaja.Email = kasutaja.Email;
         AktiivneKasutaja.Roll = kasutaja.Roll;
 
         var menyy = new FormMain();
