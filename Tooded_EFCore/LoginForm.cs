@@ -59,9 +59,18 @@ public partial class LoginForm : Form
         AktiivneKasutaja.Email = kasutaja.Email;
         AktiivneKasutaja.Roll = kasutaja.Roll;
 
-        var menyy = new FormMain();
-        menyy.FormClosed += (s, a) => Close();
-        menyy.Show();
+        if (AktiivneKasutaja.OnAdmin)
+        {
+            var adminPaneel = new AdminForm();
+            adminPaneel.FormClosed += (s, a) => Close();
+            adminPaneel.Show();
+        }
+        else
+        {
+            var menyy = new FormMain();
+            menyy.FormClosed += (s, a) => Close();
+            menyy.Show();
+        }
         Hide();
     }
 }
